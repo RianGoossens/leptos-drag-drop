@@ -1,0 +1,8 @@
+@font-face {
+  font-family: roboto;
+  src: url("assets/robotoflex.woff2") format("woff2");
+}
+* {
+  font-family: roboto;
+  font-variation-settings: "wght" 200, "wdth" 75;
+}
