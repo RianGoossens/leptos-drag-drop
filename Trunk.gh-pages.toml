@@ -1,0 +1,6 @@
+version=0.1
+[build]
+target = "index.html"
+dist = "dist"
+public_url = "/leptos-drag-drop/"
+release = true
