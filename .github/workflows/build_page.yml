@@ -15,30 +15,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Add Wasm target
+    - name: Checkout ☑️
+      uses: actions/checkout@v3
+    
+    - name: Add Wasm target 🎯
       run: rustup target add wasm32-unknown-unknown
-    - name: Install Trunk
+    
+    - name: Install Trunk 🌳
       uses: jetli/trunk-action@v0.4.0
       with:
         version: 'latest'
-    - name: Build
+        
+    - name: Build 🛠️
       run: trunk build --release
-    
-    - name: Archive artifact
-      shell: sh
-      run: |
-        tar \
-          --dereference --hard-dereference \
-          --directory "dist" \
-          -cvf "$RUNNER_TEMP/artifact.tar" \
-          --exclude=.git \
-          --exclude=.github \
-          .
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+        
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-        name: "Leptos Drag Drop"
-        path: ${{ runner.temp }}/artifact.tar
-        retention-days: 1
+        folder: dist
