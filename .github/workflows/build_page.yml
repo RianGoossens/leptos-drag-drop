@@ -42,4 +42,3 @@ jobs:
         name: "Leptos Drag Drop"
         path: ${{ runner.temp }}/artifact.tar
         retention-days: 1
-        if-no-files-found: error
