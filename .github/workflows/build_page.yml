@@ -8,10 +8,9 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-
+  
 jobs:
   build_page:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -26,10 +25,34 @@ jobs:
       with:
         version: 'latest'
         
-    - name: Build 🛠️
-      run: trunk build --release
+    #- name: Build 🛠️
+    #  run: trunk build --release
+  
+    - name: Fix permissions 🗝️
+      run: |
+        chmod -v -R +rX "dist/" | while read line; do
+          echo "::warning title=Invalid file permissions automatically fixed::$line"
+        done 
         
-    - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@v4
+    - name: Upload Pages Artifact ⬆️
+      uses: actions/upload-pages-artifact@v2
       with:
-        folder: dist
+        path: dist    
+        
+  deploy_page:
+    needs: build_page
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Deploy to GitHub Pages 🚀
+        id: deployment
+        uses: actions/deploy-pages@v2
