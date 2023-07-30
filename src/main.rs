@@ -1,5 +1,5 @@
 use leptos::*;
-use web_sys::{EventTarget, MouseEvent};
+use web_sys::EventTarget;
 
 #[component]
 fn drag_area(cx: Scope, children: Children) -> impl IntoView {
@@ -12,26 +12,26 @@ fn drag_area(cx: Scope, children: Children) -> impl IntoView {
 
     let node_ref = create_node_ref(cx);
 
-    let on_mouse_down = move |event: MouseEvent| {
-        if let Some(target) = event.target() {
+    let drag_start = move |event_target: Option<EventTarget>, x, y| {
+        if let Some(target) = event_target {
             if let Some(element) = node_ref.get() {
                 if &element as &EventTarget == &target {
                     dragging.set(true);
-                    x_drag_offset.set(x_position.get() - event.page_x());
-                    y_drag_offset.set(y_position.get() - event.page_y());
+                    x_drag_offset.set(x_position.get() - x);
+                    y_drag_offset.set(y_position.get() - y);
                 };
             }
         }
     };
 
-    let on_mouse_up = move |_| {
+    let drag_end = move || {
         dragging.set(false);
     };
 
-    let on_mouse_move = move |event: MouseEvent| {
+    let drag_move = move |x, y| {
         if dragging.get() {
-            x_position.set(event.page_x() + x_drag_offset.get());
-            y_position.set(event.page_y() + y_drag_offset.get());
+            x_position.set(x + x_drag_offset.get());
+            y_position.set(y + y_drag_offset.get());
         }
     };
 
@@ -43,10 +43,14 @@ fn drag_area(cx: Scope, children: Children) -> impl IntoView {
         <div
             _ref=node_ref
             style=style
-            on:mousemove=on_mouse_move
-            on:mouseup=on_mouse_up
-            on:mousedown=on_mouse_down
-            on:mouseleave=on_mouse_up
+            on:mousedown = move |event| drag_start(event.target(), event.page_x(), event.page_y())
+            on:mouseup = move |_| drag_end()
+            on:mouseleave = move |_| drag_end()
+            on:mousemove = move |event| drag_move(event.page_x(), event.page_y())
+
+            on:touchstart = move |event| drag_start(event.target(), event.page_x(), event.page_y())
+            on:touchend = move |_| drag_end()
+            on:touchmove = move |event| drag_move(event.page_x(), event.page_y())
         >
             <div>
                 "Drag Area"
