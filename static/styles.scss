@@ -14,10 +14,13 @@
 html {
     height: 100dvh;
     width: 100dvw;
+    overscroll-behavior-y: contain;
 }
 
 body {
     height: calc(100% - 20pt);
     margin: 0pt;
     padding: 10pt;
+    background-color: blue;
+    overscroll-behavior-y: contain;
 }

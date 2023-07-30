@@ -48,9 +48,25 @@ fn drag_area(cx: Scope, children: Children) -> impl IntoView {
             on:mouseleave = move |_| drag_end()
             on:mousemove = move |event| drag_move(event.page_x(), event.page_y())
 
-            on:touchstart = move |event| drag_start(event.target(), event.page_x(), event.page_y())
-            on:touchend = move |_| drag_end()
-            on:touchmove = move |event| drag_move(event.page_x(), event.page_y())
+            on:touchstart = move |event| {
+                event.prevent_default();
+                event.stop_propagation();
+                if let Some(target_touch) = event.target_touches().get(0) {
+                    drag_start(event.target(), target_touch.page_x(), target_touch.page_y());
+                }
+            }
+            on:touchend = move |event| {
+                event.prevent_default();
+                event.stop_propagation();
+                drag_end()
+            }
+            on:touchmove = move |event| {
+                event.prevent_default();
+                event.stop_propagation();
+                if let Some(target_touch) = event.target_touches().get(0) {
+                    drag_move(target_touch.page_x(), target_touch.page_y());
+                }
+            }
         >
             <div>
                 "Drag Area"
@@ -63,9 +79,11 @@ fn drag_area(cx: Scope, children: Children) -> impl IntoView {
 fn main() {
     mount_to_body(|cx| {
         view! { cx,
-            <DragArea>
-                "hi"
-            </DragArea>
+            <div style="height:100%;background-color:green;">
+                <DragArea>
+                    "hi"
+                </DragArea>
+            </div>
         }
     })
 }

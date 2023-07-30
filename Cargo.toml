@@ -8,7 +8,13 @@ edition = "2021"
 [dependencies]
 base64 = "0.21.2"
 rand = "0.8.5"
-web-sys = { version = "0.3.63", features = ["CssStyleDeclaration", "HtmlImageElement"] }
+web-sys = { version = "0.3.63", features = [
+    "CssStyleDeclaration", 
+    "HtmlImageElement",
+    "Touch",
+    "TouchEvent",
+    "TouchList"
+    ]}
 leptos = { version="0.4.2", features = ["csr"] }
 wasm-bindgen = "0.2.86"
 gloo = "0.9.0"
