@@ -10,3 +10,14 @@
         'wght' 200, 
         'wdth' 75;
 }
+
+html {
+    height: 100dvh;
+    width: 100dvw;
+}
+
+body {
+    height: calc(100% - 20pt);
+    margin: 0pt;
+    padding: 10pt;
+}
