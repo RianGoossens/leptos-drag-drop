@@ -52,7 +52,7 @@ fn thingy(cx: Scope, color: [u8; 3]) -> impl IntoView {
                 let touch = event.target_touches().get(0).expect("There should always be at least 1 touch.");
                 drag_start(touch.page_x(), touch.page_y());
             }
-            on:touchend=move |event| {
+            on:touchend=move |_| {
                 drag_end();
             }
         >
