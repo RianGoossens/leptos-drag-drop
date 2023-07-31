@@ -1,76 +1,41 @@
 use leptos::*;
-use web_sys::EventTarget;
+
+pub mod draggable;
+
+pub use draggable::Draggable;
 
 #[component]
-fn drag_area(cx: Scope, children: Children) -> impl IntoView {
-    let dragging = create_rw_signal(cx, false);
-    let x_position = create_rw_signal(cx, 0);
-    let y_position = create_rw_signal(cx, 0);
-
-    let x_drag_offset = create_rw_signal(cx, 0);
-    let y_drag_offset = create_rw_signal(cx, 0);
-
-    let node_ref = create_node_ref(cx);
-
-    let drag_start = move |event_target: Option<EventTarget>, x, y| {
-        if let Some(target) = event_target {
-            if let Some(element) = node_ref.get() {
-                if &element as &EventTarget == &target {
-                    dragging.set(true);
-                    x_drag_offset.set(x_position.get() - x);
-                    y_drag_offset.set(y_position.get() - y);
-                };
-            }
-        }
-    };
-
-    let drag_end = move || {
-        dragging.set(false);
-    };
-
-    let drag_move = move |x, y| {
-        if dragging.get() {
-            x_position.set(x + x_drag_offset.get());
-            y_position.set(y + y_drag_offset.get());
-        }
-    };
-
+fn thingy(cx: Scope, color: [u8; 3]) -> impl IntoView {
     let style = move || {
-        format!("background-color:red; width:100pt; height: 100pt; position: absolute; left: {}px; top: {}px;", x_position.get(), y_position.get())
+        format!(
+            "border-radius:10pt;background-color:rgb({},{},{});padding:10pt;margin:10pt;",
+            color[0], color[1], color[2]
+        )
     };
-
     view! { cx,
-        <div
-            _ref=node_ref
-            style=style
-            on:mousedown = move |event| drag_start(event.target(), event.page_x(), event.page_y())
-            on:mouseup = move |_| drag_end()
-            on:mouseleave = move |_| drag_end()
-            on:mousemove = move |event| drag_move(event.page_x(), event.page_y())
+        <div style=style>
+            "I'm a Thingy!"
+        </div>
+    }
+}
 
-            on:touchstart = move |event| {
-                event.prevent_default();
-                event.stop_propagation();
-                if let Some(target_touch) = event.target_touches().get(0) {
-                    drag_start(event.target(), target_touch.page_x(), target_touch.page_y());
-                }
-            }
-            on:touchend = move |event| {
-                event.prevent_default();
-                event.stop_propagation();
-                drag_end()
-            }
-            on:touchmove = move |event| {
-                event.prevent_default();
-                event.stop_propagation();
-                if let Some(target_touch) = event.target_touches().get(0) {
-                    drag_move(target_touch.page_x(), target_touch.page_y());
-                }
-            }
-        >
-            <div>
-                "Drag Area"
-            </div>
+#[component]
+fn drop_context(cx: Scope, children: Children) -> impl IntoView {
+    view! { cx,
+        <div>
+            {children(cx)}
+        </div>
+    }
+}
+
+#[component]
+fn drop_zone(cx: Scope, size_weight: u32, children: Children) -> impl IntoView {
+    let style = move || {
+        format!("display:flex;flex-direction:column;background-color:gray;padding:10pt;margin:10pt;max-width:100pt;height:100pt;border-radius:10pt;flex:{size_weight}")
+    };
+    view! { cx,
+        <div style=style>
+            "I'm a Drop Zone!!"
             { children(cx) }
         </div>
     }
@@ -79,10 +44,21 @@ fn drag_area(cx: Scope, children: Children) -> impl IntoView {
 fn main() {
     mount_to_body(|cx| {
         view! { cx,
-            <div style="height:100%;background-color:green;">
-                <DragArea>
-                    "hi"
-                </DragArea>
+            <div style="height:200pt;background-color:green;">
+                <Draggable>
+                    <div>
+                        "Drag Area" <br/>
+                        "hi"
+                    </div>
+                </Draggable>
+            </div>
+            <div style="height:200pt;background-color:orange;margin:10pt;display:flex;flex-direction:row;">
+                "Hello World!"
+                <DropContext>
+                    <DropZone size_weight=1>
+                        <Thingy color=[0,255,0]/>
+                    </DropZone>
+                </DropContext>
             </div>
         }
     })
