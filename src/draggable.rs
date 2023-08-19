@@ -73,24 +73,26 @@ pub fn draggable(cx: Scope, children: Children) -> impl IntoView {
         <div
             _ref=node_ref
             style=style
-            on:mousedown = move |event| drag_start(event.target(), event.page_x(), event.page_y())
-            on:mouseup = move |_| drag_end()
-            on:mouseleave = move |_| drag_end()
-            on:mousemove = move |event| drag_move(event.page_x(), event.page_y())
+            on:mousedown=move |event| drag_start(event.target(), event.page_x(), event.page_y())
+            on:mouseup=move |_| drag_end()
+            on:mouseleave=move |_| drag_end()
+            on:mousemove=move |event| drag_move(event.page_x(), event.page_y())
 
-            on:touchstart = move |event| {
+            on:touchstart=move |event| {
                 event.prevent_default();
                 event.stop_propagation();
                 if let Some(target_touch) = event.target_touches().get(0) {
                     drag_start(event.target(), target_touch.page_x(), target_touch.page_y());
                 }
             }
-            on:touchend = move |event| {
+
+            on:touchend=move |event| {
                 event.prevent_default();
                 event.stop_propagation();
                 drag_end()
             }
-            on:touchmove = move |event| {
+
+            on:touchmove=move |event| {
                 event.prevent_default();
                 event.stop_propagation();
                 if let Some(target_touch) = event.target_touches().get(0) {
@@ -98,7 +100,8 @@ pub fn draggable(cx: Scope, children: Children) -> impl IntoView {
                 }
             }
         >
-            { children(cx) }
+
+            {children(cx)}
         </div>
     }
 }
